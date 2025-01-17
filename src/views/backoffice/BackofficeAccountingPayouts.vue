@@ -79,7 +79,7 @@ const sumItemsForOrder = (payment: any, itemID: number) => {
     }
   })
 
-  return formatCredit(sum)
+  return sum
 }
 
 const exportTable = () => {
@@ -160,9 +160,28 @@ const exportTable = () => {
                     :key="`td_${payment.ID}_${item.ID}`"
                     className="border-t-2 p-3"
                   >
-                    {{ sumItemsForOrder(payment, item.ID) }} €
+                    {{ formatCredit(sumItemsForOrder(payment, item.ID)) }} €
                   </td>
-                  <td className="border-t-2 p-3">{{ formatCredit(payment.Amount) }} €</td>
+                  <td class="border-t-2 p-3">{{ formatCredit(payment.Amount) }} €</td>
+                </tr>
+                <tr v-if="payments && payments.length > 0">
+                  <td class="border-t-2 p-3"></td>
+                  <td class="border-t-2 p-3"></td>
+                  <td class="border-t-2 p-3"></td>
+                  <td v-for="item in items" :key="`td_total_${item.ID}`" class="border-t-2 p-3">
+                    {{
+                      formatCredit(
+                        payments.reduce(
+                          (acc, payment) => acc + sumItemsForOrder(payment, item.ID),
+                          0
+                        )
+                      )
+                    }}
+                    €
+                  </td>
+                  <td class="border-t-2 p-3">
+                    {{ formatCredit(payments.reduce((acc, payment) => acc + payment.Amount, 0)) }} €
+                  </td>
                 </tr>
               </tbody>
             </table>
